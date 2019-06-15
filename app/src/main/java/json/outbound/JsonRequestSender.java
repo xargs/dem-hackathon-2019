@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
 
+import http.HttpConnection;
 import http.HttpConnectionFactory;
 
 public class JsonRequestSender {
@@ -44,6 +46,36 @@ public class JsonRequestSender {
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
+
+    public String sendConfirmPickRequest(String terminalId, String confirmationCode, String primaryKey, int picked) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getConfirmPickRequestHttpConnection().getHttpURLConnection();
+        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT);
+        String request  = JsonRequestBuilder.buildConfirmPickRequest(terminalId, confirmationCode, primaryKey, picked);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+    public String sendPickWalkFinishRequest(String terminalId, String pickWalkId) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkFinishRequestHttpConnection().getHttpURLConnection();
+        String request  = JsonRequestBuilder.buildPickWalkFinishRequest(terminalId, pickWalkId);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+    public String sendPickContainerConfirmationRequest(String terminalId, String destinationLocationId, List<String> pickContainerIds) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkFinishRequestHttpConnection().getHttpURLConnection();
+        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT);
+        String request  = JsonRequestBuilder.buildPickContainerConfirmationRequest(terminalId, destinationLocationId, pickContainerIds);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+//    public String sendSkuImageRequest(String sku) throws Exception {
+//        HttpURLConnection httpURLConnection = HttpConnectionFactory.getSkuImageRequestHttpConnection(sku).getHttpURLConnection();
+//        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_GET);
+//        sendRequest(httpURLConnection, request);
+//        return getResponse(httpURLConnection);
+//    }
 
     private void sendRequest(HttpURLConnection httpURLConnection, String request) throws Exception {
         try{

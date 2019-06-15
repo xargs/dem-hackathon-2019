@@ -2,13 +2,7 @@ package json.outbound;
 
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-
-import json.outbound.AssignPickContainerRequest;
-import json.outbound.ConfigurationRequest;
-import json.outbound.PickRequest;
-import json.outbound.PickWalkRequest;
-import json.outbound.RegisterRequest;
+import java.util.List;
 
 
 public class JsonRequestBuilder {
@@ -17,33 +11,27 @@ public class JsonRequestBuilder {
      * Build register request
      * @param terminalId
      * @return
-     * @throws JSONException
      */
-    public static String buildRegisterRequest(String terminalId) throws JSONException {
-        Gson gson = new Gson();
-        return gson.toJson(new RegisterRequest(terminalId));
+    public static String buildRegisterRequest(String terminalId) {
+        return new Gson().toJson(new RegisterRequest(terminalId));
     }
 
     /**
      * Build configuration request.
      * @param terminalId
      * @return
-     * @throws JSONException
      */
-    public static String buildConfigurationRequest(String terminalId) throws JSONException {
-        Gson gson = new Gson();
-        return gson.toJson(new ConfigurationRequest(terminalId));
+    public static String buildConfigurationRequest(String terminalId) {
+        return new Gson().toJson(new ConfigurationRequest(terminalId));
     }
 
     /**
      * Build pick walk request.
      * @param terminalId
      * @return
-     * @throws JSONException
      */
-    public static String buildPickWalkRequest(String terminalId) throws JSONException {
-        Gson gson = new Gson();
-        return gson.toJson(new PickWalkRequest(terminalId));
+    public static String buildPickWalkRequest(String terminalId) {
+        return new Gson().toJson(new PickWalkRequest(terminalId));
     }
 
     /**
@@ -54,11 +42,9 @@ public class JsonRequestBuilder {
      * @param unitType
      * @param position
      * @return
-     * @throws JSONException
      */
-    public static String buildAssignPickContainerRequest(String terminalId, String pickWalkId, String pickContainerId, String unitType, String position) throws JSONException {
-        Gson gson = new Gson();
-        return gson.toJson(new AssignPickContainerRequest(terminalId, pickContainerId, unitType, position));
+    public static String buildAssignPickContainerRequest(String terminalId, String pickWalkId, String pickContainerId, String unitType, String position) {
+        return new Gson().toJson(new AssignPickContainerRequest(terminalId, pickContainerId, unitType, position));
     }
 
     /**
@@ -66,10 +52,41 @@ public class JsonRequestBuilder {
      * @param terminalId
      * @param pickWalkId
      * @return
-     * @throws JSONException
      */
-    public static String buildPickRequest(String terminalId, String pickWalkId) throws JSONException {
-        Gson gson = new Gson();
-        return gson.toJson(new PickRequest(terminalId, pickWalkId));
+    public static String buildPickRequest(String terminalId, String pickWalkId) {
+        return new Gson().toJson(new PickRequest(terminalId, pickWalkId));
+    }
+
+    /**
+     * Build confirm pick request.
+     * @param terminalId
+     * @param confirmationCode
+     * @param primaryKey
+     * @param picked
+     * @return
+     */
+    public static String buildConfirmPickRequest(String terminalId, String confirmationCode, String primaryKey, int picked) {
+        return new Gson().toJson(new ConfirmPickRequest(terminalId, confirmationCode, primaryKey, picked));
+    }
+
+    /**
+     * Build pick walk finish request.
+     * @param terminalId
+     * @param pickWalkId
+     * @return
+     */
+    public static String buildPickWalkFinishRequest(String terminalId, String pickWalkId) {
+        return new Gson().toJson(new PickWalkFinishRequest(terminalId, pickWalkId));
+    }
+
+    /**
+     * Build pick container confirmation request.
+     * @param terminalId
+     * @param destinationLocationId
+     * @param pickContainerIds
+     * @return
+     */
+    public static String buildPickContainerConfirmationRequest(String terminalId, String destinationLocationId, List<String> pickContainerIds ) {
+        return new Gson().toJson(new PickContainerConfirmationRequest(terminalId, destinationLocationId, pickContainerIds));
     }
 }

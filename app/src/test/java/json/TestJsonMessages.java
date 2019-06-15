@@ -7,10 +7,15 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import json.inbound.ConfigurationResponse;
+import json.inbound.ConfirmPickResponse;
+import json.inbound.Pick;
 import json.inbound.PickResponse;
 import json.inbound.PickWalkResponse;
 import json.inbound.RegisterResponse;
+import json.outbound.ConfirmPickRequest;
 import json.outbound.JsonRequestSender;
+
+import static json.JsonConstants.CONFIRMATION_CODE;
 
 public class TestJsonMessages {
 
@@ -51,5 +56,28 @@ public class TestJsonMessages {
         String pickRequestResponse = new JsonRequestSender().sendPickRequest(TERMINAL_ID_KEY, pickWalkResponse.getPickWalkId());
         PickResponse pickResponse = new Gson().fromJson(pickRequestResponse, PickResponse.class);
         Assert.assertTrue("Must have 1 pick", pickResponse.getPicks().size() >= 1);
+    }
+
+    @Test
+    public void testConfirmPickRequest() throws Exception {
+        String response = new JsonRequestSender().sendPickWalkRequest(TERMINAL_ID_KEY);
+        PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
+        String pickRequestResponse = new JsonRequestSender().sendPickRequest(TERMINAL_ID_KEY, pickWalkResponse.getPickWalkId());
+        PickResponse pickResponse = new Gson().fromJson(pickRequestResponse, PickResponse.class);
+        for(Pick pick : pickResponse.getPicks()) {
+            String confirmPickResponse = new JsonRequestSender().sendConfirmPickRequest(TERMINAL_ID_KEY, CONFIRMATION_CODE, pick.getPrimaryKey(), pick.getQuantityTarget());
+            ConfirmPickResponse confirmPickResponse1 = new Gson().fromJson(confirmPickResponse, ConfirmPickResponse.class);
+            Assert.assertTrue("messageText is expected to be OK", confirmPickResponse1.getMessageText().equals(CONFIRMATION_CODE));
+        }
+    }
+
+    @Test
+    public void testPickWalkFinishRequest() throws Exception {
+        // TODO
+    }
+
+    @Test
+    public void testPickContainerConfirmationRequest() throws Exception {
+        // TODO
     }
 }
