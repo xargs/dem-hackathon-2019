@@ -24,7 +24,14 @@ public class JsonRequestSender {
         return getResponse(httpURLConnection);
     }
 
-    public void sendRequest(HttpURLConnection httpURLConnection, String request) throws Exception {
+    public String sendPickWalkRequest(String terminalId) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkRequestHttpConnection().getHttpURLConnection();
+        String request  = JsonRequestBuilder.buildPickWalkRequest(terminalId);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+    private void sendRequest(HttpURLConnection httpURLConnection, String request) throws Exception {
         try{
             OutputStream os = httpURLConnection.getOutputStream();
             byte[] input = request.getBytes("utf-8");
@@ -34,7 +41,7 @@ public class JsonRequestSender {
         }
     }
 
-    public String getResponse(HttpURLConnection httpURLConnection) throws Exception {
+    private String getResponse(HttpURLConnection httpURLConnection) throws Exception {
         BufferedReader br = new BufferedReader(
                 new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
         StringBuilder response = new StringBuilder();
