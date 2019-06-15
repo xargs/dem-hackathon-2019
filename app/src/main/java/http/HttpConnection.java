@@ -1,5 +1,7 @@
 package http;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -26,5 +28,25 @@ public class HttpConnection {
 
     public void setRequestMethod(String requestMethod) {
         this.requestMethod = requestMethod;
+    }
+
+    public void connect() throws IOException {
+        httpURLConnection.connect();
+    }
+
+    public void disconnect(){
+        httpURLConnection.disconnect();
+    }
+
+    public OutputStream getOutputStream() throws IOException{
+        return httpURLConnection.getOutputStream();
+    }
+
+    public String getResponseMessage() throws IOException{
+        return httpURLConnection.getResponseMessage();
+    }
+
+    public int getResponseCode() throws IOException{
+        return httpURLConnection.getResponseCode();
     }
 }
