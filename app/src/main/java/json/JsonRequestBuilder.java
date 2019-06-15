@@ -5,35 +5,18 @@ import org.json.simple.JSONObject;
 
 import java.util.UUID;
 
+import static json.JsonConstants.HACKER_10;
+import static json.JsonConstants.TERMINAL_ID_KEY;
+import static json.JsonConstants.USER_NAME_KEY;
+import static json.JsonConstants.UUID_KEY;
+
 public class JsonRequestBuilder {
-
-    /**
-     * Build URL to register a user
-     * @return
-     */
-    public String buildRegisterUrl() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(JsonConstants.PTG_END_POINT);
-        sb.append("/register");
-        return sb.toString();
-    }
-
-    /**
-     * Build URL for configuration request
-     * @return
-     */
-    public String buildConfigurationRequestUrl() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(JsonConstants.PTG_END_POINT);
-        sb.append("/configurationRequest");
-        return sb.toString();
-    }
 
     /**
      * Generate UUID (Universally Unique IDentifier)
      * @return
      */
-    public synchronized String generateUUID() {
+    public synchronized static String generateUUID() {
         return UUID.randomUUID().toString();
     }
 
@@ -43,11 +26,11 @@ public class JsonRequestBuilder {
      * @return
      * @throws JSONException
      */
-    public String buildRegisterRequest(String terminalId) throws JSONException {
+    public static String buildRegisterRequest(String terminalId) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("uuid", generateUUID());
-        jsonObject.put("userName", JsonConstants.HACKER_10);
-        jsonObject.put("terminalId", terminalId);
+        jsonObject.put(UUID_KEY, generateUUID());
+        jsonObject.put(USER_NAME_KEY, HACKER_10);
+        jsonObject.put(TERMINAL_ID_KEY, terminalId);
         return jsonObject.toString();
     }
 
@@ -57,11 +40,11 @@ public class JsonRequestBuilder {
      * @return
      * @throws JSONException
      */
-    public String buildConfigurationRequest(String terminalId) throws JSONException {
+    public static String buildConfigurationRequest(String terminalId) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("uuid", generateUUID());
-        jsonObject.put("userName", JsonConstants.HACKER_10);
-        jsonObject.put("terminalId", terminalId);
+        jsonObject.put(UUID_KEY, generateUUID());
+        jsonObject.put(USER_NAME_KEY, HACKER_10);
+        jsonObject.put(TERMINAL_ID_KEY, terminalId);
         return jsonObject.toString();
     }
 }
