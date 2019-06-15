@@ -1,6 +1,8 @@
 package http;
 
+import static json.JsonConstants.ASSIGN_PICK_CONTAINER_URL;
 import static json.JsonConstants.CONFIGURATION_REQUEST_URL;
+import static json.JsonConstants.PICK_REQUEST_URL;
 import static json.JsonConstants.PICK_WALK_REQUEST_URL;
 import static json.JsonConstants.PTG_END_POINT;
 import static json.JsonConstants.REGISTER_URL;
@@ -37,6 +39,28 @@ public class HttpConnectionFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(PTG_END_POINT);
         sb.append(PICK_WALK_REQUEST_URL);
+        return new HttpConnection(sb.toString());
+    }
+
+    /**
+     * Get http connection for assign pick container request
+     * @return
+     */
+    public static HttpConnection getAssignPickContainerRequestHttpConnection() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append(PTG_END_POINT);
+        sb.append(ASSIGN_PICK_CONTAINER_URL);
+        return new HttpConnection(sb.toString());
+    }
+
+    /**
+     * Get http connection for pick request
+     * @return
+     */
+    public static HttpConnection getPickRequestHttpConnection() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append(PTG_END_POINT);
+        sb.append(PICK_REQUEST_URL);
         return new HttpConnection(sb.toString());
     }
 }

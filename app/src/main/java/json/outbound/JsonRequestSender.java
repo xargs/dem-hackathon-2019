@@ -1,4 +1,4 @@
-package json;
+package json.outbound;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,6 +27,20 @@ public class JsonRequestSender {
     public String sendPickWalkRequest(String terminalId) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkRequestHttpConnection().getHttpURLConnection();
         String request  = JsonRequestBuilder.buildPickWalkRequest(terminalId);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+    public String sendAssignPickContainerRequest(String terminalId, String pickWalkId, String pickContainerId, String unitType, String position) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getAssignPickContainerRequestHttpConnection().getHttpURLConnection();
+        String request  = JsonRequestBuilder.buildAssignPickContainerRequest(terminalId, pickWalkId, pickContainerId, unitType, position);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
+    public String sendPickRequest(String terminalId, String pickWalkId) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickRequestHttpConnection().getHttpURLConnection();
+        String request  = JsonRequestBuilder.buildPickRequest(terminalId, pickWalkId);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
