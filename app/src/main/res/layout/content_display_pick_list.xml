@@ -4,6 +4,12 @@
     android:layout_height="fill_parent"
     android:padding="2dp" >
 
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
     <ImageView
         android:id="@+id/sku_pic"
         android:layout_width="70dp"
@@ -17,9 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:textStyle="bold"
         android:layout_toRightOf="@+id/sku_pic"
         android:paddingBottom="10dp"
-        android:text="txt"
+        android:text=""
         android:textSize="20sp" />
 
     <TextView
@@ -28,17 +35,24 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/sku_desc"
         android:layout_below="@+id/sku_desc"
-        android:text="txt"
+        android:text=""
         android:textSize="16sp" />
 
     <TextView
         android:id="@+id/unit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/quantity"
-        android:layout_alignBottom="@+id/quantity"
+        android:layout_below="@+id/sku_desc"
+        android:layout_toRightOf="@+id/quantity"
+        android:text=""
+        android:textSize="16sp" />
+    <TextView
+        android:id="@+id/coordinate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sku_desc"
         android:layout_alignParentRight="true"
-        android:text="txt"
+        android:text=""
         android:textSize="16sp" />
 
 </RelativeLayout>

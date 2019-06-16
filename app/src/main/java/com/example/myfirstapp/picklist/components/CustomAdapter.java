@@ -53,6 +53,7 @@ public class CustomAdapter extends BaseAdapter {
         TextView skuDesc;
         TextView quantiy;
         TextView unit;
+        TextView coordinate;
     }
 
     @Override
@@ -70,18 +71,20 @@ public class CustomAdapter extends BaseAdapter {
             holder.skuPic = (ImageView) convertView.findViewById(R.id.sku_pic);
             holder.quantiy = (TextView) convertView.findViewById(R.id.quantity);
             holder.unit = (TextView) convertView.findViewById(R.id.unit);
+            holder.coordinate = (TextView)convertView.findViewById(R.id.coordinate) ;
 
             RowItem row_pos = rowItems.get(position);
 
-//            holder.profile_pic.setImageResource(row_pos.getProfile_pic_id());
             holder.skuDesc.setText(row_pos.getSkuDescription());
-            holder.quantiy.setText(row_pos.getQuantity());
+            holder.quantiy.setText(String.valueOf(row_pos.getQuantity())+" ");
             holder.unit.setText(row_pos.getUnit());
+            holder.coordinate.setText(row_pos.getCoordinate());
             String skuId = row_pos.getSkuId();
-            String url = new StringBuilder("http://US7813PC:8080/mgtp/resources/sku-images/")
-                                .append(skuId)+".JPG";
-            new DownloadImage(holder.skuPic).execute(url);
-
+//            String url = new StringBuilder("http://US7813PC:8080/mgtp/resources/sku-images/")
+//                                .append(skuId)+".JPG";
+//            String url = "file:///Users/kaimalrk/gettyimages-186843005-612x612.jpg";
+//            new DownloadImage(holder.skuPic).execute(url);
+            holder.skuPic.setImageResource(R.drawable.apple);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
