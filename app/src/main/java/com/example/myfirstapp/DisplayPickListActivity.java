@@ -1,40 +1,52 @@
 package com.example.myfirstapp;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.example.myfirstapp.picklist.components.CustomAdapter;
+import com.example.myfirstapp.picklist.components.RowItem;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import http.HttpConnection;
 import http.HttpConnectionFactory;
 import json.JsonConstants;
+import json.inbound.Pick;
+import json.inbound.PickResponse;
 
-public class DisplayPickListActivity extends AppCompatActivity {
+public class DisplayPickListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+
+    private Context context;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_pick_list);
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        this.context = this;
+        listView = (ListView) findViewById(R.id.list);
+        listView.setOnItemClickListener(this);
+        new RestRequestAsyncTask().execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Log.i("Hello","Item Clicked");
     }
 
     private class RestRequestAsyncTask extends AsyncTask<String,Void,String>{
@@ -49,7 +61,31 @@ public class DisplayPickListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-            super.onPostExecute(s);
+            PickResponse response= new Gson().fromJson(s, PickResponse.class);
+
+            if(response != null && response.getStateCode() != null
+                    && "OK".equals(response.getStateCode().getValue()) ){
+                //Log.i("PickRequest","Success");
+               if(response.getPicks() != null && response.getPicks().size() > 0){
+                   List<RowItem> list = new ArrayList<RowItem>();
+                   for(Pick pick : response.getPicks()){
+                       RowItem item = new RowItem();
+                       item.setCoordinate(pick.getCoordinate());
+                       item.setDestinationId(pick.getDestinationId());
+                       item.setKey(pick.getPrimaryKey());
+                       item.setOrderId(pick.getOrderId());
+                       item.setOrderPosition(pick.getOrderPos());
+                       item.setQuantity(pick.getQuantityTarget());
+                       item.setSequence(pick.getSequence());
+                       item.setSkuDescription(pick.getSkuDescription());
+                       item.setSkuId(pick.getSkuId());
+                       item.setUnit(pick.getQuantityUnit());
+                       list.add(item);
+                   }
+                   CustomAdapter adapter = new CustomAdapter(context, list);
+                   listView.setAdapter(adapter);
+               }
+            }
         }
 
         @Override
@@ -87,8 +123,8 @@ public class DisplayPickListActivity extends AppCompatActivity {
                 os.flush();
                 os.close();
 
-                Log.i("STATUS", String.valueOf(connection.getResponseCode()));
-                Log.i("MSG" , connection.getResponseMessage());
+                //Log.i("STATUS", String.valueOf(connection.getResponseCode()));
+                //Log.i("MSG" , connection.getResponseMessage());
 
                 message = connection.getResponseMessage();
                 connection.disconnect();

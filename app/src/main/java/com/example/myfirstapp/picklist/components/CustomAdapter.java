@@ -27,7 +27,7 @@ public class CustomAdapter extends BaseAdapter {
     Context context;
     List<RowItem> rowItems;
 
-    CustomAdapter(Context context, List<RowItem> rowItems) {
+    public CustomAdapter(Context context, List<RowItem> rowItems) {
         this.context = context;
         this.rowItems = rowItems;
     }
@@ -77,6 +77,10 @@ public class CustomAdapter extends BaseAdapter {
             holder.skuDesc.setText(row_pos.getSkuDescription());
             holder.quantiy.setText(row_pos.getQuantity());
             holder.unit.setText(row_pos.getUnit());
+            String skuId = row_pos.getSkuId();
+            String url = new StringBuilder("http://US7813PC:8080/mgtp/resources/sku-images/")
+                                .append(skuId)+".JPG";
+            new DownloadImage(holder.skuPic).execute(url);
 
             convertView.setTag(holder);
         } else {
