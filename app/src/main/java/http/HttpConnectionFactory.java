@@ -3,6 +3,7 @@ package http;
 import static json.JsonConstants.ASSIGN_PICK_CONTAINER_URL;
 import static json.JsonConstants.CONFIGURATION_REQUEST_URL;
 import static json.JsonConstants.CONFIRM_PICK_URL;
+import static json.JsonConstants.DEREGISTER_URL;
 import static json.JsonConstants.PICK_CONTAINER_CONFIRMATION_URL;
 import static json.JsonConstants.PICK_REQUEST_URL;
 import static json.JsonConstants.PICK_WALK_FINISH_URL;
@@ -10,6 +11,7 @@ import static json.JsonConstants.PICK_WALK_REQUEST_URL;
 import static json.JsonConstants.PTG_END_POINT;
 import static json.JsonConstants.REGISTER_URL;
 import static json.JsonConstants.SKU_IMAGES_URL;
+import static json.JsonConstants.SKU_IMAGE_EXTENSION;
 
 public class HttpConnectionFactory {
 
@@ -21,6 +23,17 @@ public class HttpConnectionFactory {
         StringBuilder sb = new StringBuilder();
         sb.append(PTG_END_POINT);
         sb.append(REGISTER_URL);
+        return new HttpConnection(sb.toString());
+    }
+
+    /**
+     * Get http connection for deregister
+     * @return
+     */
+    public static HttpConnection getDeregisterHttpConnection() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append(PTG_END_POINT);
+        sb.append(DEREGISTER_URL);
         return new HttpConnection(sb.toString());
     }
 
@@ -107,9 +120,8 @@ public class HttpConnectionFactory {
      */
     public static HttpConnection getSkuImageRequestHttpConnection(String sku) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append(PTG_END_POINT);
         sb.append(SKU_IMAGES_URL);
-        sb.append("/" + sku + ".JPG");
+        sb.append("/").append(sku).append(SKU_IMAGE_EXTENSION);
         return new HttpConnection(sb.toString());
     }
 }
