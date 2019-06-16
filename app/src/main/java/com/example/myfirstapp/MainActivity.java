@@ -6,8 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import butterknife.InjectView;
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
