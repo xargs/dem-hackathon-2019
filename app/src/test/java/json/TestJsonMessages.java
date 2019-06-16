@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import json.inbound.ConfigurationResponse;
 import json.inbound.ConfirmPickResponse;
 import json.inbound.Pick;
+import json.inbound.PickContainer;
 import json.inbound.PickResponse;
 import json.inbound.PickWalkResponse;
 import json.inbound.RegisterResponse;
@@ -21,14 +22,14 @@ public class TestJsonMessages {
 
     @Test
     public void testRegisterRequest() throws Exception {
-        String response = new JsonRequestSender().sendRegisterRequest(TERMINAL_ID_KEY);
+        String response = new JsonRequestSender().sendRegisterRequest();
         RegisterResponse registerResponse = new Gson().fromJson(response, RegisterResponse.class);
         assertEquals(true, registerResponse.getMessageText().equals("OK"), "messageText expected to be OK");
     }
 
     @Test
     public void testConfigurationRequest() throws Exception {
-        String response = new JsonRequestSender().sendConfigurationRequest(TERMINAL_ID_KEY);
+        String response = new JsonRequestSender().sendConfigurationRequest();
         ConfigurationResponse configurationResponse = new Gson().fromJson(response, ConfigurationResponse.class);
         assertEquals(true, configurationResponse.getMessageText().equals("OK"), "messageText expected to be OK");
         assertEquals(true, configurationResponse.getStateCode().getValue().equals("OK"), "stateCode value expected to be OK");
@@ -36,7 +37,7 @@ public class TestJsonMessages {
 
     @Test
     public void testPickWalkRequest() throws Exception {
-        String response = new JsonRequestSender().sendPickWalkRequest(TERMINAL_ID_KEY);
+        String response = new JsonRequestSender().sendPickWalkRequest();
         PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
         assertEquals(true, pickWalkResponse.getMessageText().equals("OK"), "messageText expected to be OK");
         assertEquals(true, pickWalkResponse.isPickWalkAlreadyAssignedToWorker(), "pickWalkAlreadyAssignedToWorker should be true");
@@ -44,26 +45,34 @@ public class TestJsonMessages {
 
     @Test
     public void testAssignPickContainerRequest() throws Exception {
-        // TODO
+        String response = new JsonRequestSender().sendPickWalkRequest();
+        PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
+        for(PickContainer pickContainer : pickWalkResponse.getPickContainers()) {
+            String assignPickContainerResponse = new JsonRequestSender().sendAssignPickContainerRequest(
+                    pickWalkResponse.getPickWalkId(),
+                    pickContainer.getLoadUnitId(),
+                    pickContainer.getLoadUnitType(),
+                    pickContainer.getLocationPosition());
+        }
     }
 
     @Test
     public void testPickRequest() throws Exception {
-        String response = new JsonRequestSender().sendPickWalkRequest(TERMINAL_ID_KEY);
+        String response = new JsonRequestSender().sendPickWalkRequest();
         PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
-        String pickRequestResponse = new JsonRequestSender().sendPickRequest(TERMINAL_ID_KEY, pickWalkResponse.getPickWalkId());
+        String pickRequestResponse = new JsonRequestSender().sendPickRequest(pickWalkResponse.getPickWalkId());
         PickResponse pickResponse = new Gson().fromJson(pickRequestResponse, PickResponse.class);
         assertEquals(true, pickResponse.getPicks().size() >= 1, "Must have 1 pick");
     }
 
     @Test
     public void testConfirmPickRequest() throws Exception {
-        String response = new JsonRequestSender().sendPickWalkRequest(TERMINAL_ID_KEY);
+        String response = new JsonRequestSender().sendPickWalkRequest();
         PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
-        String pickRequestResponse = new JsonRequestSender().sendPickRequest(TERMINAL_ID_KEY, pickWalkResponse.getPickWalkId());
+        String pickRequestResponse = new JsonRequestSender().sendPickRequest(pickWalkResponse.getPickWalkId());
         PickResponse pickResponse = new Gson().fromJson(pickRequestResponse, PickResponse.class);
         for(Pick pick : pickResponse.getPicks()) {
-            String confirmPickResponse = new JsonRequestSender().sendConfirmPickRequest(TERMINAL_ID_KEY, CONFIRMATION_CODE, pick.getPrimaryKey(), pick.getQuantityTarget());
+            String confirmPickResponse = new JsonRequestSender().sendConfirmPickRequest(CONFIRMATION_CODE, pick.getPrimaryKey(), pick.getQuantityTarget());
             ConfirmPickResponse confirmPickResponse1 = new Gson().fromJson(confirmPickResponse, ConfirmPickResponse.class);
             assertEquals(true, confirmPickResponse1.getMessageText().equals(CONFIRMATION_CODE), "messageText is expected to be OK");
         }

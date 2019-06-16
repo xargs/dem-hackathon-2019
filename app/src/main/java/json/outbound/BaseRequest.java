@@ -10,9 +10,9 @@ public class BaseRequest {
     private String userName;
     private String terminalId;
 
-    public BaseRequest(String terminalId) {
+    public BaseRequest() {
         this.uuid = UUID.randomUUID().toString();
         this.userName = JsonConstants.HACKER_10;
-        this.terminalId = terminalId;
+        this.terminalId = JsonRequestBuilder.getTerminalId();
     }
 }

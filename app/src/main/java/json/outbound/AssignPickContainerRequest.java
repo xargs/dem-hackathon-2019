@@ -7,8 +7,8 @@ public class AssignPickContainerRequest extends BaseRequest {
     private String unitType;
     private String position;
 
-    public AssignPickContainerRequest(String terminalId, String pickContainerId, String unitType, String position) {
-        super(terminalId);
+    public AssignPickContainerRequest(String pickWalkId, String pickContainerId, String unitType, String position) {
+        this.pickWalkId = pickWalkId;
         this.pickContainerId = pickContainerId;
         this.unitType = unitType;
         this.position = position;

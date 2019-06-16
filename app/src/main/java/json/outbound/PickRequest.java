@@ -2,8 +2,7 @@ package json.outbound;
 
 public class PickRequest extends BaseRequest {
     private String pickWalkId;
-    public PickRequest(String terminalId, String pickWalkId) {
-        super(terminalId);
+    public PickRequest(String pickWalkId) {
         this.pickWalkId = pickWalkId;
     }
 }
