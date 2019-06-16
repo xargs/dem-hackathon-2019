@@ -2,9 +2,7 @@ package json;
 
 import com.google.gson.Gson;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import json.inbound.ConfigurationResponse;
 import json.inbound.ConfirmPickResponse;
@@ -12,10 +10,10 @@ import json.inbound.Pick;
 import json.inbound.PickResponse;
 import json.inbound.PickWalkResponse;
 import json.inbound.RegisterResponse;
-import json.outbound.ConfirmPickRequest;
 import json.outbound.JsonRequestSender;
 
 import static json.JsonConstants.CONFIRMATION_CODE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestJsonMessages {
 
@@ -25,23 +23,23 @@ public class TestJsonMessages {
     public void testRegisterRequest() throws Exception {
         String response = new JsonRequestSender().sendRegisterRequest(TERMINAL_ID_KEY);
         RegisterResponse registerResponse = new Gson().fromJson(response, RegisterResponse.class);
-        Assert.assertTrue("messageText expected to be OK", registerResponse.getMessageText().equals("OK"));
+        assertEquals(true, registerResponse.getMessageText().equals("OK"), "messageText expected to be OK");
     }
 
     @Test
     public void testConfigurationRequest() throws Exception {
         String response = new JsonRequestSender().sendConfigurationRequest(TERMINAL_ID_KEY);
         ConfigurationResponse configurationResponse = new Gson().fromJson(response, ConfigurationResponse.class);
-        Assert.assertTrue("messageText expected to be OK", configurationResponse.getMessageText().equals("OK"));
-        Assert.assertTrue("stateCode value expected to be OK", configurationResponse.getStateCode().getValue().equals("OK"));
+        assertEquals(true, configurationResponse.getMessageText().equals("OK"), "messageText expected to be OK");
+        assertEquals(true, configurationResponse.getStateCode().getValue().equals("OK"), "stateCode value expected to be OK");
     }
 
     @Test
     public void testPickWalkRequest() throws Exception {
         String response = new JsonRequestSender().sendPickWalkRequest(TERMINAL_ID_KEY);
         PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
-        Assert.assertTrue("messageText expected to be OK", pickWalkResponse.getMessageText().equals("OK"));
-        Assert.assertTrue("pickWalkAlreadyAssignedToWorker should be true", pickWalkResponse.isPickWalkAlreadyAssignedToWorker());
+        assertEquals(true, pickWalkResponse.getMessageText().equals("OK"), "messageText expected to be OK");
+        assertEquals(true, pickWalkResponse.isPickWalkAlreadyAssignedToWorker(), "pickWalkAlreadyAssignedToWorker should be true");
     }
 
     @Test
@@ -55,7 +53,7 @@ public class TestJsonMessages {
         PickWalkResponse pickWalkResponse = new Gson().fromJson(response, PickWalkResponse.class);
         String pickRequestResponse = new JsonRequestSender().sendPickRequest(TERMINAL_ID_KEY, pickWalkResponse.getPickWalkId());
         PickResponse pickResponse = new Gson().fromJson(pickRequestResponse, PickResponse.class);
-        Assert.assertTrue("Must have 1 pick", pickResponse.getPicks().size() >= 1);
+        assertEquals(true, pickResponse.getPicks().size() >= 1, "Must have 1 pick");
     }
 
     @Test
@@ -67,7 +65,7 @@ public class TestJsonMessages {
         for(Pick pick : pickResponse.getPicks()) {
             String confirmPickResponse = new JsonRequestSender().sendConfirmPickRequest(TERMINAL_ID_KEY, CONFIRMATION_CODE, pick.getPrimaryKey(), pick.getQuantityTarget());
             ConfirmPickResponse confirmPickResponse1 = new Gson().fromJson(confirmPickResponse, ConfirmPickResponse.class);
-            Assert.assertTrue("messageText is expected to be OK", confirmPickResponse1.getMessageText().equals(CONFIRMATION_CODE));
+            assertEquals(true, confirmPickResponse1.getMessageText().equals(CONFIRMATION_CODE), "messageText is expected to be OK");
         }
     }
 
@@ -79,5 +77,11 @@ public class TestJsonMessages {
     @Test
     public void testPickContainerConfirmationRequest() throws Exception {
         // TODO
+    }
+
+    @Test
+    public void testSkuRequest() throws Exception {
+        String response = new JsonRequestSender().sendSkuImageRequest("7106804126");
+        assertEquals(true, response != null, "Image not received");
     }
 }

@@ -49,7 +49,7 @@ public class JsonRequestSender {
 
     public String sendConfirmPickRequest(String terminalId, String confirmationCode, String primaryKey, int picked) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getConfirmPickRequestHttpConnection().getHttpURLConnection();
-        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT);
+        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT); // PUT method for confirm pick request
         String request  = JsonRequestBuilder.buildConfirmPickRequest(terminalId, confirmationCode, primaryKey, picked);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
@@ -64,18 +64,18 @@ public class JsonRequestSender {
 
     public String sendPickContainerConfirmationRequest(String terminalId, String destinationLocationId, List<String> pickContainerIds) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkFinishRequestHttpConnection().getHttpURLConnection();
-        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT);
+        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT); // PUT method for pick container confirm request
         String request  = JsonRequestBuilder.buildPickContainerConfirmationRequest(terminalId, destinationLocationId, pickContainerIds);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-//    public String sendSkuImageRequest(String sku) throws Exception {
-//        HttpURLConnection httpURLConnection = HttpConnectionFactory.getSkuImageRequestHttpConnection(sku).getHttpURLConnection();
-//        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_GET);
-//        sendRequest(httpURLConnection, request);
-//        return getResponse(httpURLConnection);
-//    }
+    public String sendSkuImageRequest(String sku) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getSkuImageRequestHttpConnection(sku).getHttpURLConnection();
+        httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_GET); // GET method for sku image request
+        httpURLConnection.setRequestProperty("Accept", null); // Set accept to null to be able to read image
+        return getResponse(httpURLConnection);
+    }
 
     private void sendRequest(HttpURLConnection httpURLConnection, String request) throws Exception {
         try{
