@@ -5,8 +5,7 @@ public class ConfirmPickRequest extends BaseRequest {
     private String primaryKey;
     private int picked;
 
-    public ConfirmPickRequest(String terminalId, String confirmationCode, String primaryKey, int picked) {
-        super(terminalId);
+    public ConfirmPickRequest(String confirmationCode, String primaryKey, int picked) {
         this.confirmationCode = confirmationCode;
         this.primaryKey = primaryKey;
         this.picked = picked;

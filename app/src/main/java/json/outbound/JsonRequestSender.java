@@ -12,67 +12,67 @@ import http.HttpConnectionFactory;
 
 public class JsonRequestSender {
 
-    public String sendRegisterRequest(String terminalId) throws Exception {
+    public String sendRegisterRequest() throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getRegisterHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildRegisterRequest(terminalId);
+        String request  = JsonRequestBuilder.buildRegisterRequest();
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendDeregisterRequest(String terminalId) throws Exception {
+    public String sendDeregisterRequest() throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getDeregisterHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildDeregisterRequest(terminalId);
+        String request  = JsonRequestBuilder.buildDeregisterRequest();
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendConfigurationRequest(String terminalId) throws Exception {
+    public String sendConfigurationRequest() throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getConfigurationHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildConfigurationRequest(terminalId);
+        String request  = JsonRequestBuilder.buildConfigurationRequest();
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendPickWalkRequest(String terminalId) throws Exception {
+    public String sendPickWalkRequest() throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkRequestHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildPickWalkRequest(terminalId);
+        String request  = JsonRequestBuilder.buildPickWalkRequest();
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendAssignPickContainerRequest(String terminalId, String pickWalkId, String pickContainerId, String unitType, String position) throws Exception {
+    public String sendAssignPickContainerRequest(String pickWalkId, String pickContainerId, String unitType, String position) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getAssignPickContainerRequestHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildAssignPickContainerRequest(terminalId, pickWalkId, pickContainerId, unitType, position);
+        String request  = JsonRequestBuilder.buildAssignPickContainerRequest(pickWalkId, pickContainerId, unitType, position);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendPickRequest(String terminalId, String pickWalkId) throws Exception {
+    public String sendPickRequest(String pickWalkId) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickRequestHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildPickRequest(terminalId, pickWalkId);
+        String request  = JsonRequestBuilder.buildPickRequest(pickWalkId);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendConfirmPickRequest(String terminalId, String confirmationCode, String primaryKey, int picked) throws Exception {
+    public String sendConfirmPickRequest(String confirmationCode, String primaryKey, int picked) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getConfirmPickRequestHttpConnection().getHttpURLConnection();
         httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT); // PUT method for confirm pick request
-        String request  = JsonRequestBuilder.buildConfirmPickRequest(terminalId, confirmationCode, primaryKey, picked);
+        String request  = JsonRequestBuilder.buildConfirmPickRequest(confirmationCode, primaryKey, picked);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendPickWalkFinishRequest(String terminalId, String pickWalkId) throws Exception {
+    public String sendPickWalkFinishRequest(String pickWalkId) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkFinishRequestHttpConnection().getHttpURLConnection();
-        String request  = JsonRequestBuilder.buildPickWalkFinishRequest(terminalId, pickWalkId);
+        String request  = JsonRequestBuilder.buildPickWalkFinishRequest(pickWalkId);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
 
-    public String sendPickContainerConfirmationRequest(String terminalId, String destinationLocationId, List<String> pickContainerIds) throws Exception {
+    public String sendPickContainerConfirmationRequest(String destinationLocationId, List<String> pickContainerIds) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getPickWalkFinishRequestHttpConnection().getHttpURLConnection();
         httpURLConnection.setRequestMethod(HttpConnection.REQUEST_METHOD_PUT); // PUT method for pick container confirm request
-        String request  = JsonRequestBuilder.buildPickContainerConfirmationRequest(terminalId, destinationLocationId, pickContainerIds);
+        String request  = JsonRequestBuilder.buildPickContainerConfirmationRequest(destinationLocationId, pickContainerIds);
         sendRequest(httpURLConnection, request);
         return getResponse(httpURLConnection);
     }
