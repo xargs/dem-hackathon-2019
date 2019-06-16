@@ -19,6 +19,13 @@ public class JsonRequestSender {
         return getResponse(httpURLConnection);
     }
 
+    public String sendDeregisterRequest(String terminalId) throws Exception {
+        HttpURLConnection httpURLConnection = HttpConnectionFactory.getDeregisterHttpConnection().getHttpURLConnection();
+        String request  = JsonRequestBuilder.buildDeregisterRequest(terminalId);
+        sendRequest(httpURLConnection, request);
+        return getResponse(httpURLConnection);
+    }
+
     public String sendConfigurationRequest(String terminalId) throws Exception {
         HttpURLConnection httpURLConnection = HttpConnectionFactory.getConfigurationHttpConnection().getHttpURLConnection();
         String request  = JsonRequestBuilder.buildConfigurationRequest(terminalId);

@@ -5,6 +5,7 @@ public class JsonConstants {
     /** Web service end points */
     public static final String PTG_END_POINT                            = "http://us7813pc:8080/mgtp/resources/v1.0/ptg";
     public static final String REGISTER_URL                             = "/register";
+    public static final String DEREGISTER_URL                           = "/deregister";
     public static final String CONFIGURATION_REQUEST_URL                = "/configurationRequest";
     public static final String PICK_WALK_REQUEST_URL                    = "/pickWalkRequest";
     public static final String ASSIGN_PICK_CONTAINER_URL                = "/assignPickContainer";

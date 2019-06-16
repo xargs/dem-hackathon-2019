@@ -17,6 +17,15 @@ public class JsonRequestBuilder {
     }
 
     /**
+     * Build deregister request
+     * @param terminalId
+     * @return
+     */
+    public static String buildDeregisterRequest(String terminalId) {
+        return new Gson().toJson(new DeregisterRequest(terminalId));
+    }
+
+    /**
      * Build configuration request.
      * @param terminalId
      * @return
