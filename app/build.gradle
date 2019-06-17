@@ -19,6 +19,16 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+    dataBinding {
+        enabled = true;
+    }
+    defaultConfig {
+        applicationId "sample.android.databinding"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
 }
 
 dependencies {
