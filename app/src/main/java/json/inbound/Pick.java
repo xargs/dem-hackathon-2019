@@ -17,6 +17,7 @@ public class Pick implements Serializable {
     private String destinationId;
     private String destinationCheckDigit;
     private boolean reverseRecommended;
+    private String pickWalkId;
 
     public String getPrimaryKey() {
         return primaryKey;
@@ -68,5 +69,13 @@ public class Pick implements Serializable {
 
     public boolean isReverseRecommended() {
         return reverseRecommended;
+    }
+
+    public String getPickWalkId() {
+        return pickWalkId;
+    }
+
+    public void setPickWalkId(String pickWalkId) {
+        this.pickWalkId = pickWalkId;
     }
 }
