@@ -18,4 +18,6 @@ public class JsonConstants {
 
     public static final String HACKER_10                                = "Hacker10";
     public static final String CONFIRMATION_CODE                        = "OK";
+
+    public static final String PHONE_NUMBER                             = "";
 }
