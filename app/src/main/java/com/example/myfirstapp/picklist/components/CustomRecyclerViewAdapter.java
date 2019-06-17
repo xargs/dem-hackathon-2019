@@ -25,7 +25,7 @@ import java.util.List;
 
 import sms.SMSSender;
 
-public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.RowItemViewHolder> {
+public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.RowItemViewHolder>   {
     public List<RowItem> rowItems;
 
     public class RowItemViewHolder extends RecyclerView.ViewHolder {
@@ -49,6 +49,8 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
         this.rowItems = rowItems;
     }
 
+
+
     @Override
     public RowItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -56,6 +58,8 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
         return new RowItemViewHolder(itemView);
     }
+
+
 
     @Override
     public void onBindViewHolder(@NonNull CustomRecyclerViewAdapter.RowItemViewHolder holder, int position) {
@@ -67,6 +71,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
         holder.coordinate.setText(row_pos.getCoordinate());
 //        holder.skuPic.setImageResource(R.drawable.apple);
         String skuId = row_pos.getSkuId();
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("Hello","Item Clicked");
+            }
+        });
 
         String url = new StringBuilder("http://US7813PC.amcs.tld:8080/mgtp/resources/sku-images/")
                 .append(skuId)+".JPG";
