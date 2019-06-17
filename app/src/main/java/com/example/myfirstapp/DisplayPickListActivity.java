@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -81,11 +82,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
             public void onLeftClicked(int position) {
                 String key = adapter.rowItems.get(position).getKey();
                 int quantity = adapter.rowItems.get(position).getQuantity();
-                try {
-                    new JsonRequestSender().sendConfirmPickRequest(JsonConstants.CONFIRMATION_CODE,key,quantity);
-                } catch (Exception e) {
-                    Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
-                }
+                new PickConfirmAsyncTask().execute(key,String.valueOf(quantity), String.valueOf(position));
             }
 
         });
@@ -242,6 +239,57 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
             }
 
             return message;
+        }
+    }
+
+    private class PickConfirmAsyncTask extends AsyncTask<String,Void,String>{
+        private int position;
+        public PickConfirmAsyncTask() {
+            super();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            adapter.rowItems.remove(position);
+            adapter.notifyItemRemoved(position);
+            adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+
+            if(adapter.rowItems.size() == 0){
+                View view = findViewById(R.id.frameLayout);
+                Snackbar.make(view,"Order Completed",Snackbar.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            super.onCancelled(s);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            this.position = Integer.parseInt(strings[2]);
+            try {
+                new JsonRequestSender().sendConfirmPickRequest(JsonConstants.CONFIRMATION_CODE,strings[0],Integer.valueOf(strings[1]));
+            } catch (Exception e) {
+                Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
+            }
+
+            return null;
         }
     }
 

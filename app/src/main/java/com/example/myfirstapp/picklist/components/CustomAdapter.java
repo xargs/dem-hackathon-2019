@@ -80,11 +80,12 @@ public class CustomAdapter extends BaseAdapter {
             holder.unit.setText(row_pos.getUnit());
             holder.coordinate.setText(row_pos.getCoordinate());
             String skuId = row_pos.getSkuId();
-//            String url = new StringBuilder("http://US7813PC:8080/mgtp/resources/sku-images/")
-//                                .append(skuId)+".JPG";
+            String url = new StringBuilder("http://US7813PC.amcs.tld:8080/mgtp/resources/sku-images/")
+                                .append(skuId)+".JPG";
 //            String url = "file:///Users/kaimalrk/gettyimages-186843005-612x612.jpg";
-//            new DownloadImage(holder.skuPic).execute(url);
-            holder.skuPic.setImageResource(R.drawable.apple);
+            new DownloadImage(holder.skuPic).execute(url);
+//            holder.skuPic.setImageResource(R.drawable.apple);
+
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
