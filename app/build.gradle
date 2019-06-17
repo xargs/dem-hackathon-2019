@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.myfirstapp"
-        minSdkVersion 15
+        minSdkVersion 24
         targetSdkVersion 28
         versionCode 1
         versionName "1.0-${System.env.VERSION_SHA}"
@@ -24,7 +24,7 @@ android {
     }
     defaultConfig {
         applicationId "sample.android.databinding"
-        minSdkVersion 15
+        minSdkVersion 24
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"

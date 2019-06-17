@@ -1,6 +1,7 @@
 package com.example.myfirstapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import http.HttpConnection;
@@ -135,6 +137,12 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                        item.setUnit(pick.getQuantityUnit());
                        list.add(item);
                    }
+                   list.sort(new Comparator<RowItem>() {
+                       @Override
+                       public int compare(RowItem item1, RowItem item2) {
+                           return item1.getCoordinate().compareTo(item2.getCoordinate());
+                       }
+                   });
 //                   CustomAdapter adapter = new CustomAdapter(context, list);
                    adapter = new CustomRecyclerViewAdapter(list);
 //                   listView.setAdapter(adapter);
@@ -162,29 +170,6 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         protected String doInBackground(String... params) {
             String message = null;
             try {
-//                HttpConnection connection = HttpConnectionFactory.getPickRequestHttpConnection();
-//                connection.connect();
-//
-//                JSONObject jsonParam = new JSONObject();
-//                jsonParam.put("uuid", "{{$guid}}");
-//                jsonParam.put("userName", JsonConstants.HACKER_10);
-//                jsonParam.put("terminalId", "5036");
-//                jsonParam.put("pickWalkId", "000000000000131");
-//
-//
-//                DataOutputStream os = new DataOutputStream(connection.getOutputStream());
-//                os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
-//
-//                os.flush();
-//                os.close();
-//
-//                //Log.i("STATUS", String.valueOf(connection.getResponseCode()));
-//                //Log.i("MSG" , connection.getResponseMessage());
-//
-//                message = connection.getResponseMessage();
-//                connection.disconnect();
-//                JsonRequestSender sender = new JsonRequestSender();
-//                message = sender.sendPickRequest("5036","000000000000131");
 
                 message = "{\n" +
                         "    \"originalResponseGeneratedOn\": 1560622005043,\n" +
@@ -247,12 +232,9 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                         "            \"reverseRecommended\": true\n" +
                         "        }\n" +                        "    ]\n" +
                         "}";
-//                HttpConnection connection = HttpConnectionFactory.getTestPickResponse();
-//                connection.setRequestMethod(HttpConnection.REQUEST_METHOD_GET);
-//                connection.connect();
-//
-//                message = connection.getResponseMessage();
-//                connection.disconnect();
+//                Intent intent = getIntent();
+//                String pickWalkId = intent.getStringExtra("pickWalkId");
+//                message = new JsonRequestSender().sendPickRequest(pickWalkId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
