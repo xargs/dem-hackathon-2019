@@ -1,6 +1,8 @@
 package json.inbound;
 
-public class Pick {
+import java.io.Serializable;
+
+public class Pick implements Serializable {
 
     private String primaryKey;
     private int sequence;
