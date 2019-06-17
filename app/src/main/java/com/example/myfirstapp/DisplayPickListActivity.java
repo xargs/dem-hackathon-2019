@@ -1,11 +1,15 @@
 package com.example.myfirstapp;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,12 +17,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.myfirstapp.picklist.components.CustomAdapter;
+import com.example.myfirstapp.picklist.components.CustomRecyclerViewAdapter;
 import com.example.myfirstapp.picklist.components.RowItem;
+import com.example.myfirstapp.picklist.components.SwipeController;
+import com.example.myfirstapp.picklist.components.SwipeControllerActions;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,16 +41,60 @@ import json.outbound.JsonRequestSender;
 public class DisplayPickListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private Context context;
-    private ListView listView;
+//    private ListView listView;
+    private CustomRecyclerViewAdapter adapter;
+    SwipeController swipeController = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_pick_list);
+        setContentView(R.layout.content_display_pick_list);
         this.context = this;
-        listView = (ListView) findViewById(R.id.list);
-        listView.setOnItemClickListener(this);
+//        listView = (ListView) findViewById(R.id.list);
+//        listView.setOnItemClickListener(this);
+
         new RestRequestAsyncTask().execute();
+
+
+    }
+
+    private void setupRecyclerView() {
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adapter);
+        swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                adapter.rowItems.remove(position);
+                adapter.notifyItemRemoved(position);
+                adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+            }
+
+            @Override
+            public void onLeftClicked(int position) {
+                String key = adapter.rowItems.get(position).getKey();
+                int quantity = adapter.rowItems.get(position).getQuantity();
+                try {
+                    new JsonRequestSender().sendConfirmPickRequest(JsonConstants.CONFIRMATION_CODE,key,quantity);
+                } catch (Exception e) {
+                    Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
+                }
+            }
+
+        });
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(recyclerView);
+
+        recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
     }
 
     @Override
@@ -83,8 +135,10 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                        item.setUnit(pick.getQuantityUnit());
                        list.add(item);
                    }
-                   CustomAdapter adapter = new CustomAdapter(context, list);
-                   listView.setAdapter(adapter);
+//                   CustomAdapter adapter = new CustomAdapter(context, list);
+                   adapter = new CustomRecyclerViewAdapter(list);
+//                   listView.setAdapter(adapter);
+                   setupRecyclerView();
                }
             }
         }
