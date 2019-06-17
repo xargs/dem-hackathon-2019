@@ -1,6 +1,8 @@
 package json.inbound;
 
-public class Pick {
+import java.io.Serializable;
+
+public class Pick implements Serializable {
 
     private String primaryKey;
     private int sequence;
@@ -15,6 +17,7 @@ public class Pick {
     private String destinationId;
     private String destinationCheckDigit;
     private boolean reverseRecommended;
+    private String pickWalkId;
 
     public String getPrimaryKey() {
         return primaryKey;
@@ -66,5 +69,13 @@ public class Pick {
 
     public boolean isReverseRecommended() {
         return reverseRecommended;
+    }
+
+    public String getPickWalkId() {
+        return pickWalkId;
+    }
+
+    public void setPickWalkId(String pickWalkId) {
+        this.pickWalkId = pickWalkId;
     }
 }
