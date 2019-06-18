@@ -4,7 +4,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -16,10 +15,13 @@ import com.google.gson.Gson;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import json.JsonConstants;
+import json.inbound.ConfigurationResponse;
+import json.inbound.PickWalkResponse;
 import json.inbound.RegisterResponse;
 import json.outbound.JsonRequestSender;
-import json.outbound.RegisterRequest;
+
+import static json.JsonConstants.CONFIRMATION_CODE;
+import static json.JsonConstants.RF_PK_ZONE;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -48,12 +50,7 @@ public class LoginActivity extends AppCompatActivity {
     public void login() {
         Log.d(TAG, "Login");
 
-        if (!validate()) {
-            onLoginFailed();
-            return;
-        }
-
-        _loginButton.setEnabled(false);
+        new JsonRegisterRequestAsyncTask().execute();
 
         final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this,
                 R.style.AppTheme_Dark_Dialog);
@@ -63,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = _emailText.getText().toString();
 
-
+        // TODO: Implement your own authentication logic here.
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -73,11 +70,21 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 500);
-
-        new RegisterAsyncTask().execute();
+                }, 3000);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_SIGNUP) {
+            if (resultCode == RESULT_OK) {
+
+                // TODO: Implement successful signup logic here
+                // By default we just finish the Activity and log them in automatically
+                this.finish();
+            }
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -92,34 +99,23 @@ public class LoginActivity extends AppCompatActivity {
 
     public void onLoginFailed() {
         Toast.makeText(getBaseContext(), "Login failed", Toast.LENGTH_LONG).show();
-
         _loginButton.setEnabled(true);
     }
 
-    public boolean validate() {
-        boolean valid = true;
-
-        String email = _emailText.getText().toString();
-
-        if (email.isEmpty() || !JsonConstants.HACKER_10.equals(email)) {
-            _emailText.setError("enter a valid username");
-            valid = false;
-        } else {
-            _emailText.setError(null);
+    private void onSuccessFullLoginAndGettingPickWalkRequest(String r) {
+        PickWalkResponse pickWalkResponse = new Gson().fromJson(r, PickWalkResponse.class);
+        if(pickWalkResponse != null && pickWalkResponse.getMessageText().equals(CONFIRMATION_CODE)
+                && pickWalkResponse.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
+            Intent intent = new Intent(this, ScanContainerActivity.class);
+            intent.putExtra("pickWalkId", pickWalkResponse.getPickWalkId());
+            intent.putExtra("unitType", pickWalkResponse.getDefaultPickContainerType());
+            startActivity(intent);
         }
-//
-//        if (password.isEmpty() || password.length() < 4 || password.length() > 10) {
-//            _passwordText.setError("between 4 and 10 alphanumeric characters");
-//            valid = false;
-//        } else {
-//            _passwordText.setError(null);
-//        }
-
-        return valid;
     }
-    private class RegisterAsyncTask extends AsyncTask<String,Void,String> {
-        private int position;
-        public RegisterAsyncTask() {
+
+    public class JsonRegisterRequestAsyncTask extends AsyncTask<String,Void,String> {
+
+        public JsonRegisterRequestAsyncTask() {
             super();
         }
 
@@ -129,8 +125,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-           super.onPostExecute(s);
+        protected void onPostExecute(String r) {
+            onSuccessFullLoginAndGettingPickWalkRequest(r);
         }
 
         @Override
@@ -149,22 +145,35 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(String... strings) {
-
+        protected String doInBackground(String... params) {
             try {
                 String response = new JsonRequestSender().sendRegisterRequest();
-                RegisterResponse registerResponse = new Gson().fromJson(response, RegisterResponse.class);
+                if(response != null) {
+                    RegisterResponse registerResponse = new Gson().fromJson(response, RegisterResponse.class);
+                    if(registerResponse != null && registerResponse.getMessageText().equals(CONFIRMATION_CODE)
+                            && registerResponse.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
+                        String response1 = new JsonRequestSender().sendConfigurationRequest();
+                        if(response1 != null) {
+                            ConfigurationResponse configurationResponse = new Gson().fromJson(response1, ConfigurationResponse.class);
+                            if(configurationResponse != null && configurationResponse.getMessageText().equals(CONFIRMATION_CODE)
+                                    && configurationResponse.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
+                                if(configurationResponse.getAllowedPickZones() != null
+                                        && configurationResponse.getAllowedPickZones().size() > 0
+                                        && configurationResponse.getAllowedPickZones().get(0).getName().equals(RF_PK_ZONE)) {
+                                    String response2 = new JsonRequestSender().sendPickWalkRequest();
+                                    if(response2 != null) {
+                                        return response2;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
 
-                if (registerResponse == null || !registerResponse.getMode().equals("DEFAULT")){
-                    return null;
+                    }
                 }
-
-                // call next activity
-
             } catch (Exception e) {
-                Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
+                e.printStackTrace();
             }
-
             return null;
         }
     }

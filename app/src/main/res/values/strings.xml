@@ -9,6 +9,8 @@
     <string name="skuId">SKU</string>
     <string name="skuDescription">Description</string>
     <string name="pick">Pick</string>
-    <string name="delete">Delete</string>
+    <string name="delete">Remove</string>
     <string name="title_activity_replace">ReplaceActivity</string>
+    <string name="qty">Qty</string>
+    <string name="scanContainer">Scan Container</string>
 </resources>

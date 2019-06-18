@@ -50,9 +50,8 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 //        listView = (ListView) findViewById(R.id.list);
 //        listView.setOnItemClickListener(this);
         sender = new JsonRequestSender();
-        new RestRequestAsyncTask().execute();
-
-
+        String pickWalkId = getIntent().getStringExtra("pickWalkId");
+        new RestRequestAsyncTask().execute(pickWalkId);
     }
 
     private void setupRecyclerView() {
@@ -109,7 +108,6 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         @Override
         protected void onPostExecute(String s) {
             PickResponse response= new Gson().fromJson(s, PickResponse.class);
-
             if(response != null && response.getStateCode() != null
                     && "OK".equals(response.getStateCode().getValue()) ){
                 //Log.i("PickRequest","Success");
@@ -160,78 +158,12 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 
         @Override
         protected String doInBackground(String... params) {
-            String message = null;
             try {
-
-                message = "{\n" +
-                        "    \"originalResponseGeneratedOn\": 1560622005043,\n" +
-                        "    \"isOriginalResponse\": true,\n" +
-                        "    \"processTimeInMS\": 15,\n" +
-                        "    \"totalTimeInMS\": 15,\n" +
-                        "    \"messageKey\": \"APP-II-0000\",\n" +
-                        "    \"messageText\": \"OK\",\n" +
-                        "    \"token\": null,\n" +
-                        "    \"stateCode\": {\n" +
-                        "        \"value\": \"OK\",\n" +
-                        "        \"type\": \"com.dematic.wms.pic.person2goods.entity.domainvalue.PersonToGoodsResponseStateCode\",\n" +
-                        "        \"features\": null\n" +
-                        "    },\n" +
-                        "    \"message\": null,\n" +
-                        "    \"picks\": [\n" +
-                        "        {\n" +
-                        "            \"primaryKey\": \"000000000009562\",\n" +
-                        "            \"sequence\": 0,\n" +
-                        "            \"coordinate\": \"2-1-254-1-1\",\n" +
-                        "            \"checkDigit\": null,\n" +
-                        "            \"quantityTarget\": 1,\n" +
-                        "            \"quantityUnit\": \"EACH\",\n" +
-                        "            \"skuId\": \"2100001865\",\n" +
-                        "            \"skuDescription\": \"KRAFT NAT CHS SLICE PROVOLONE 8 OZ\",\n" +
-                        "            \"orderId\": \"15149326\",\n" +
-                        "            \"orderPos\": \"0001\",\n" +
-                        "            \"destinationId\": \"PC000003\",\n" +
-                        "            \"destinationCheckDigit\": null,\n" +
-                        "            \"reverseRecommended\": true\n" +
-                        "        },\n" +
-                        "{\n" +
-                "            \"primaryKey\": \"000000000009562\",\n" +
-                        "            \"sequence\": 0,\n" +
-                        "            \"coordinate\": \"2-1-300-1-1\",\n" +
-                        "            \"checkDigit\": null,\n" +
-                        "            \"quantityTarget\": 5,\n" +
-                        "            \"quantityUnit\": \"EACH\",\n" +
-                        "            \"skuId\": \"2100001865\",\n" +
-                        "            \"skuDescription\": \"PRODUCE,GRAPES AVOCADOS SOFT FRUIT,Refridgerated\",\n" +
-                        "            \"orderId\": \"15149326\",\n" +
-                        "            \"orderPos\": \"0001\",\n" +
-                        "            \"destinationId\": \"PC000003\",\n" +
-                        "            \"destinationCheckDigit\": null,\n" +
-                        "            \"reverseRecommended\": true\n" +
-                        "        }\n"+",\n" +
-                "{\n" +
-                        "            \"primaryKey\": \"000000000009562\",\n" +
-                        "            \"sequence\": 0,\n" +
-                        "            \"coordinate\": \"2-1-104-1-1\",\n" +
-                        "            \"checkDigit\": null,\n" +
-                        "            \"quantityTarget\": 1,\n" +
-                        "            \"quantityUnit\": \"EACH\",\n" +
-                        "            \"skuId\": \"2100001865\",\n" +
-                        "            \"skuDescription\": \"DAIRY,JUICE AND JUICE DRINK RFRG,Refridgerated\",\n" +
-                        "            \"orderId\": \"15149326\",\n" +
-                        "            \"orderPos\": \"0001\",\n" +
-                        "            \"destinationId\": \"PC000003\",\n" +
-                        "            \"destinationCheckDigit\": null,\n" +
-                        "            \"reverseRecommended\": true\n" +
-                        "        }\n" +                        "    ]\n" +
-                        "}";
-//                Intent intent = getIntent();
-//                String pickWalkId = intent.getStringExtra("pickWalkId");
-//                message = sender.sendPickRequest(pickWalkId);
+                return new JsonRequestSender().sendPickRequest(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            return message;
+            return null;
         }
     }
 

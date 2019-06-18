@@ -30,6 +30,8 @@
             <!--</intent-filter>-->
         <!--</activity>-->
         <activity android:name=".PickActivity" android:theme="@style/AppTheme"/>
+        <activity android:name=".ScanContainerActivity" android:theme="@style/AppTheme"/>
+        <activity android:name=".DisplayPickListActivity" android:theme="@style/AppTheme"/>
         <activity android:name=".LoginActivity" android:theme="@style/AppTheme" >
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
