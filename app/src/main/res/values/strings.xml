@@ -5,6 +5,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
+    <string name="itemDetails">Item Details</string>
     <string name="skuId">SKU</string>
     <string name="skuDescription">Description</string>
+    <string name="pick">Pick</string>
+    <string name="delete">Delete</string>
 </resources>
