@@ -26,8 +26,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import json.JsonConstants;
+import json.inbound.FinishItem;
 import json.inbound.Pick;
 import json.inbound.PickResponse;
+import json.inbound.PickWalkFinishResponse;
 import json.outbound.JsonRequestSender;
 
 public class DisplayPickListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -261,8 +263,6 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
             adapter.notifyItemRangeChanged(position, adapter.getItemCount());
 
             if(adapter.rowItems.size() == 0){
-                View view = findViewById(R.id.frameLayout);
-                Snackbar.make(view,"Order Completed",Snackbar.LENGTH_LONG).show();
                 Intent intent = getIntent();
                 String pickWalkId = intent.getStringExtra("pickWalkId");
                 String type = PICK_WALK_FINISH;
@@ -304,7 +304,21 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                 returnVal = CONFIRM_PICK;
             }else if(PICK_WALK_FINISH.equals(type)){
                 try {
-                    sender.sendPickWalkFinishRequest(strings[1]);
+                    String response = sender.sendPickWalkFinishRequest(strings[1]);
+                    PickWalkFinishResponse pickWalkFinishResponse = new Gson().
+                            fromJson(response,PickWalkFinishResponse.class);
+                    List<FinishItem> finishItems = pickWalkFinishResponse.getFinishItems();
+                    List<String> containerIds = new ArrayList<>();
+                    String destinationLocation = null;
+                    for(FinishItem finishItem : finishItems){
+                        if(destinationLocation == null){
+                            destinationLocation = finishItem.getDestinationLocationId();
+                        }
+                        containerIds.add(finishItem.getPickContainerId());
+                    }
+                    //String response2 = sender.sendPickContainerConfirmationRequest(destinationLocation,containerIds);
+                    runThread(destinationLocation);
+
                 } catch (Exception e) {
                     Log.e(DisplayPickListActivity.class.getName(), e.getMessage(), e);
                 }
@@ -312,6 +326,16 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
             }
             return returnVal;
         }
+    }
+
+    private void runThread(final String destinationLocation) {
+
+        new Thread() {
+            public void run() {
+                View view = findViewById(R.id.frameLayout);
+                Snackbar.make(view,"Order completed and sent to "+destinationLocation,Snackbar.LENGTH_LONG).show();
+            }
+        }.start();
     }
 
 
