@@ -104,8 +104,7 @@ public class PickActivity extends AppCompatActivity {
     public void onPickComplete(String r) {
         PickResponse response = new Gson().fromJson(r, PickResponse.class);
         if (response != null
-                && response.getMessageText().equals(CONFIRMATION_CODE)
-                && response.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
+                && response.getMessageText().equals(CONFIRMATION_CODE)) {
             Intent intent = new Intent(this, DisplayPickListActivity.class);
             intent.putExtra("pickWalkId", currentPick.getPickWalkId());
             startActivity(intent);
