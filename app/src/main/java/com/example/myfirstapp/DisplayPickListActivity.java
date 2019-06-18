@@ -40,7 +40,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
     private CustomRecyclerViewAdapter adapter;
     SwipeController swipeController = null;
     private JsonRequestSender sender ;
-
+    private View thisView;
 
 
     @Override
@@ -52,7 +52,9 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 //        listView.setOnItemClickListener(this);
         sender = new JsonRequestSender();
         String pickWalkId = getIntent().getStringExtra("pickWalkId");
+//        Snackbar.make(thisView,"Swipe left an item for quick pick. Touch for detailed view. ",Snackbar.LENGTH_LONG).show();
         new RestRequestAsyncTask().execute(pickWalkId);
+        thisView =  findViewById(R.id.frameLayout);
     }
 
     private void setupRecyclerView() {
@@ -143,7 +145,12 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                    adapter = new CustomRecyclerViewAdapter(context,list);
 //                   listView.setAdapter(adapter);
                    setupRecyclerView();
+                   runThread("Swipe left an item for quick pick. Touch for detailed view.");
+               }else{
+                    runThread("No Picks for the given pick walk.");
                }
+            }else{
+                runThread(response.getStateCode().getValue());
             }
         }
 
@@ -255,7 +262,8 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                         containerIds.add(finishItem.getPickContainerId());
                     }
                     //String response2 = sender.sendPickContainerConfirmationRequest(destinationLocation,containerIds);
-                    runThread(destinationLocation);
+                    String message = "Order completed and sent to "+destinationLocation;
+                    runThread(message);
 
                 } catch (Exception e) {
                     Log.e(DisplayPickListActivity.class.getName(), e.getMessage(), e);
@@ -266,12 +274,12 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         }
     }
 
-    private void runThread(final String destinationLocation) {
+    private void runThread(final String message) {
 
         new Thread() {
             public void run() {
                 View view = findViewById(R.id.frameLayout);
-                Snackbar.make(view,"Order completed and sent to "+destinationLocation,Snackbar.LENGTH_LONG).show();
+                Snackbar.make(view,message,Snackbar.LENGTH_LONG).show();
             }
         }.start();
     }
