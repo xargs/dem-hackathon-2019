@@ -31,6 +31,7 @@ import json.inbound.Pick;
 import json.inbound.PickResponse;
 import json.inbound.PickWalkFinishResponse;
 import json.outbound.JsonRequestSender;
+import sms.SMSSender;
 
 public class DisplayPickListActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -65,9 +66,14 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
+                String sku = adapter.rowItems.get(position).getSkuDescription();
                 adapter.rowItems.remove(position);
                 adapter.notifyItemRemoved(position);
                 adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+
+                String message = "The item "+ sku + " is currently unavailable."+
+                            "Apologies for the inconvenience";
+                SMSSender.sendSMS(getResources().getString(R.string.phone),message);
             }
 
             @Override
