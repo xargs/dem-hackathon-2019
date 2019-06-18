@@ -136,7 +136,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                        }
                    });
 //                   CustomAdapter adapter = new CustomAdapter(context, list);
-                   adapter = new CustomRecyclerViewAdapter(list);
+                   adapter = new CustomRecyclerViewAdapter(context,list);
 //                   listView.setAdapter(adapter);
                    setupRecyclerView();
                }

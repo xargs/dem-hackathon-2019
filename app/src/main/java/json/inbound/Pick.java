@@ -78,4 +78,56 @@ public class Pick implements Serializable {
     public void setPickWalkId(String pickWalkId) {
         this.pickWalkId = pickWalkId;
     }
+
+    public void setPrimaryKey(String primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    public void setSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    public void setCoordinate(String coordinate) {
+        this.coordinate = coordinate;
+    }
+
+    public void setCheckDigit(String checkDigit) {
+        this.checkDigit = checkDigit;
+    }
+
+    public void setQuantityTarget(int quantityTarget) {
+        this.quantityTarget = quantityTarget;
+    }
+
+    public void setQuantityUnit(String quantityUnit) {
+        this.quantityUnit = quantityUnit;
+    }
+
+    public void setSkuId(String skuId) {
+        this.skuId = skuId;
+    }
+
+    public void setSkuDescription(String skuDescription) {
+        this.skuDescription = skuDescription;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public void setOrderPos(String orderPos) {
+        this.orderPos = orderPos;
+    }
+
+    public void setDestinationId(String destinationId) {
+        this.destinationId = destinationId;
+    }
+
+    public void setDestinationCheckDigit(String destinationCheckDigit) {
+        this.destinationCheckDigit = destinationCheckDigit;
+    }
+
+    public void setReverseRecommended(boolean reverseRecommended) {
+        this.reverseRecommended = reverseRecommended;
+    }
 }
