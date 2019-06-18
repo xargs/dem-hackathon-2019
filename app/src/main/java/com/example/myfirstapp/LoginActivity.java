@@ -2,7 +2,9 @@ package com.example.myfirstapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -10,8 +12,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import json.JsonConstants;
+import json.inbound.RegisterResponse;
+import json.outbound.JsonRequestSender;
+import json.outbound.RegisterRequest;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -55,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = _emailText.getText().toString();
 
-        // TODO: Implement your own authentication logic here.
+
 
         new android.os.Handler().postDelayed(
                 new Runnable() {
@@ -65,21 +73,11 @@ public class LoginActivity extends AppCompatActivity {
                         // onLoginFailed();
                         progressDialog.dismiss();
                     }
-                }, 3000);
+                }, 500);
+
+        new RegisterAsyncTask().execute();
     }
 
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_SIGNUP) {
-            if (resultCode == RESULT_OK) {
-
-                // TODO: Implement successful signup logic here
-                // By default we just finish the Activity and log them in automatically
-                this.finish();
-            }
-        }
-    }
 
     @Override
     public void onBackPressed() {
@@ -103,8 +101,8 @@ public class LoginActivity extends AppCompatActivity {
 
         String email = _emailText.getText().toString();
 
-        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _emailText.setError("enter a valid email address");
+        if (email.isEmpty() || !JsonConstants.HACKER_10.equals(email)) {
+            _emailText.setError("enter a valid username");
             valid = false;
         } else {
             _emailText.setError(null);
@@ -118,5 +116,56 @@ public class LoginActivity extends AppCompatActivity {
 //        }
 
         return valid;
+    }
+    private class RegisterAsyncTask extends AsyncTask<String,Void,String> {
+        private int position;
+        public RegisterAsyncTask() {
+            super();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+           super.onPostExecute(s);
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onCancelled(String s) {
+            super.onCancelled(s);
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            try {
+                String response = new JsonRequestSender().sendRegisterRequest();
+                RegisterResponse registerResponse = new Gson().fromJson(response, RegisterResponse.class);
+
+                if (registerResponse == null || !registerResponse.getMode().equals("DEFAULT")){
+                    return null;
+                }
+
+                // call next activity
+
+            } catch (Exception e) {
+                Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
+            }
+
+            return null;
+        }
     }
 }
