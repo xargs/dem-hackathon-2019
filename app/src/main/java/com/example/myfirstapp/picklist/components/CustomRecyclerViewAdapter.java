@@ -80,6 +80,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
         final String orderId = row_pos.getOrderId();
         final String primaryKey = row_pos.getKey();
         final int quantityTarget = row_pos.getQuantity();
+        final String skuDesc = row_pos.getSkuDescription();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,6 +92,8 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
                 pick.setCoordinate(holder.coordinate.getText().toString());
                 pick.setOrderId(orderId);
                 pick.setPrimaryKey(primaryKey);
+                pick.setSkuDescription(skuDesc);
+                pick.setSkuId(skuId);
                 pick.setQuantityTarget(quantityTarget);
                 pick.setQuantityUnit(holder.unit.getText().toString());
                 intent.putExtra("pick",pick);
