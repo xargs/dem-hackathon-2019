@@ -50,6 +50,7 @@ public class PickActivity extends AppCompatActivity {
     @Bind(R.id.buttonDelete) Button _deleteButton;
     @Bind(R.id.surfaceView) SurfaceView _surfaceView;
     @Bind(R.id.txtBarcodeValue) TextView _txtBarcodeValue;
+    @Bind(R.id.buttonReplace) Button _replaceButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +74,12 @@ public class PickActivity extends AppCompatActivity {
                 delete();
             }
         });
+        _replaceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replace();
+            }
+        });
     }
 
     public void pick() {
@@ -85,6 +92,13 @@ public class PickActivity extends AppCompatActivity {
         Log.d(TAG, "Delete");
         _deleteButton.setEnabled(false);
         new JsonPickDeleteRequestAsyncTask().execute();
+    }
+
+    public void replace(){
+        Intent intent = new Intent(this,ReplaceActivity.class);
+        intent.putExtra("currentSku",currentPick.getSkuId());
+        intent.putExtra("skuDesc",currentPick.getSkuDescription());
+        startActivity(intent);
     }
 
     public void onPickComplete(String r) {

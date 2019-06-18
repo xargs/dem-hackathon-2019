@@ -6,11 +6,15 @@
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
     <string name="itemDetails">Item Details</string>
+    <string name="currentSkuId">Current SKU</string>
+    <string name="newSkuId">New SKU</string>
     <string name="skuId">SKU</string>
     <string name="skuDescription">Description</string>
     <string name="pick">Pick</string>
+    <string name="replace">Replace</string>
     <string name="delete">Remove</string>
     <string name="title_activity_replace">ReplaceActivity</string>
+    <string name="phone">7164356450</string>
     <string name="qty">Qty</string>
     <string name="scanContainer">Scan Container</string>
 </resources>
