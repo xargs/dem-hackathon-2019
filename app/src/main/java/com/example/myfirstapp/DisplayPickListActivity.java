@@ -10,32 +10,21 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.example.myfirstapp.picklist.components.CustomAdapter;
 import com.example.myfirstapp.picklist.components.CustomRecyclerViewAdapter;
 import com.example.myfirstapp.picklist.components.RowItem;
 import com.example.myfirstapp.picklist.components.SwipeController;
 import com.example.myfirstapp.picklist.components.SwipeControllerActions;
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import http.HttpConnection;
-import http.HttpConnectionFactory;
 import json.JsonConstants;
 import json.inbound.Pick;
 import json.inbound.PickResponse;
@@ -47,6 +36,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 //    private ListView listView;
     private CustomRecyclerViewAdapter adapter;
     SwipeController swipeController = null;
+    private JsonRequestSender sender ;
 
 
 
@@ -57,7 +47,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         this.context = this;
 //        listView = (ListView) findViewById(R.id.list);
 //        listView.setOnItemClickListener(this);
-
+        sender = new JsonRequestSender();
         new RestRequestAsyncTask().execute();
 
 
@@ -80,9 +70,10 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 
             @Override
             public void onLeftClicked(int position) {
+                String type = JsonCallsAsyncTask.CONFIRM_PICK;
                 String key = adapter.rowItems.get(position).getKey();
                 int quantity = adapter.rowItems.get(position).getQuantity();
-                new PickConfirmAsyncTask().execute(key,String.valueOf(quantity), String.valueOf(position));
+                new JsonCallsAsyncTask().execute(type,key,String.valueOf(quantity), String.valueOf(position));
             }
 
         });
@@ -233,7 +224,7 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
                         "}";
 //                Intent intent = getIntent();
 //                String pickWalkId = intent.getStringExtra("pickWalkId");
-//                message = new JsonRequestSender().sendPickRequest(pickWalkId);
+//                message = sender.sendPickRequest(pickWalkId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -242,9 +233,11 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
         }
     }
 
-    private class PickConfirmAsyncTask extends AsyncTask<String,Void,String>{
+    private class JsonCallsAsyncTask extends AsyncTask<String,Void,String>{
+        public static final String CONFIRM_PICK = "ConfirmPick";
+        public static final String PICK_WALK_FINISH = "PickWalkFinish";
         private int position;
-        public PickConfirmAsyncTask() {
+        public JsonCallsAsyncTask() {
             super();
         }
 
@@ -255,6 +248,14 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 
         @Override
         protected void onPostExecute(String s) {
+            if(CONFIRM_PICK.equals(s)) {
+                postCompleteConfirmPick();
+            }else if(PICK_WALK_FINISH.equals(s)){
+                postCompletePickWalkFinish();
+            }
+        }
+
+        private void postCompleteConfirmPick(){
             adapter.rowItems.remove(position);
             adapter.notifyItemRemoved(position);
             adapter.notifyItemRangeChanged(position, adapter.getItemCount());
@@ -262,7 +263,15 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
             if(adapter.rowItems.size() == 0){
                 View view = findViewById(R.id.frameLayout);
                 Snackbar.make(view,"Order Completed",Snackbar.LENGTH_LONG).show();
+                Intent intent = getIntent();
+                String pickWalkId = intent.getStringExtra("pickWalkId");
+                String type = PICK_WALK_FINISH;
+                new JsonCallsAsyncTask().execute(type,pickWalkId);
             }
+        }
+
+        private void postCompletePickWalkFinish(){
+
         }
 
         @Override
@@ -282,15 +291,28 @@ public class DisplayPickListActivity extends AppCompatActivity implements Adapte
 
         @Override
         protected String doInBackground(String... strings) {
-            this.position = Integer.parseInt(strings[2]);
-            try {
-                new JsonRequestSender().sendConfirmPickRequest(JsonConstants.CONFIRMATION_CODE,strings[0],Integer.valueOf(strings[1]));
-            } catch (Exception e) {
-                Log.e(DisplayPickListActivity.class.getName(),e.getMessage(),e);
-            }
 
-            return null;
+            String returnVal = null;
+            String type = strings[0];
+            if(CONFIRM_PICK.equals(type)) {
+                this.position = Integer.parseInt(strings[3]);
+                try {
+                    sender.sendConfirmPickRequest(JsonConstants.CONFIRMATION_CODE, strings[0], Integer.valueOf(strings[1]));
+                } catch (Exception e) {
+                    Log.e(DisplayPickListActivity.class.getName(), e.getMessage(), e);
+                }
+                returnVal = CONFIRM_PICK;
+            }else if(PICK_WALK_FINISH.equals(type)){
+                try {
+                    sender.sendPickWalkFinishRequest(strings[1]);
+                } catch (Exception e) {
+                    Log.e(DisplayPickListActivity.class.getName(), e.getMessage(), e);
+                }
+                returnVal = PICK_WALK_FINISH;
+            }
+            return returnVal;
         }
     }
+
 
 }
