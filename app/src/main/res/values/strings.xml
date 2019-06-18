@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My First App</string>
+    <string name="app_name">Dem ATX</string>
     <string name="title_activity_display_pick_list">DisplayPickListActivity</string>
 
     <string name="hello_world">Hello world!</string>
