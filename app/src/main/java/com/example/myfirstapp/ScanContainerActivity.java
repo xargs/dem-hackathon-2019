@@ -4,17 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.myfirstapp.databinding.ActivityPickDetailsBinding;
@@ -28,15 +24,13 @@ import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import json.inbound.AssignPickContainerResponse;
 import json.inbound.Pick;
-import json.inbound.PickResponse;
 import json.outbound.JsonRequestSender;
-import sms.SMSSender;
 
 import static json.JsonConstants.CONFIRMATION_CODE;
-import static json.JsonConstants.PHONE_NUMBER;
 
-public class PickActivity extends AppCompatActivity {
+public class ScanContainerActivity extends AppCompatActivity {
     private static final String TAG = "PickActivity";
     private Context context;
     private TextView textView;
@@ -45,68 +39,35 @@ public class PickActivity extends AppCompatActivity {
     private BarcodeDetector barcodeDetector;
     private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
+    private String pickWalkId;
+    private String unitType;
 
-    @Bind(R.id.buttonPick) Button _pickButton;
-    @Bind(R.id.buttonDelete) Button _deleteButton;
-    @Bind(R.id.surfaceView) SurfaceView _surfaceView;
-    @Bind(R.id.txtBarcodeValue) TextView _txtBarcodeValue;
+    @Bind(R.id.surfaceViewScanContainer) SurfaceView _surfaceViewScanContainer;
+    @Bind(R.id.txtBarcodeValueScanContainer) TextView _txtBarcodeValueScanContainer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityPickDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_pick_details);
+        setContentView(R.layout.activity_scan_container);
         ButterKnife.bind(this);
         Intent intent = getIntent();
-        Pick pick = (Pick) intent.getSerializableExtra("pick");
-        currentPick = pick;
-        activityPickDetailsBinding.skuValue.setText(pick.getSkuId());
-        activityPickDetailsBinding.skuDescriptionValue.setText(pick.getSkuDescription());
-        activityPickDetailsBinding.qtyValue.setText(String.valueOf(pick.getQuantityTarget()));
-        _pickButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pick();
-            }
-        });
-        _deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                delete();
-            }
-        });
+        pickWalkId = intent.getStringExtra("pickWalkId");
+        unitType = intent.getStringExtra("unitType");
     }
 
-    public void pick() {
-        Log.d(TAG, "Pick");
-        _pickButton.setEnabled(false);
-        new JsonPickCompleteRequestAsyncTask().execute();
-    }
-
-    public void delete() {
-        Log.d(TAG, "Delete");
-        _deleteButton.setEnabled(false);
-        new JsonPickDeleteRequestAsyncTask().execute();
-    }
-
-    public void onPickComplete(String r) {
-        PickResponse response = new Gson().fromJson(r, PickResponse.class);
-        if (response != null
-                && response.getMessageText().equals(CONFIRMATION_CODE)
-                && response.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
+    private void onAssignComplete(String r) {
+        AssignPickContainerResponse assignPickContainerResponse = new Gson().fromJson(r, AssignPickContainerResponse.class);
+        if(assignPickContainerResponse != null
+        && assignPickContainerResponse.getMessageText().equals(CONFIRMATION_CODE)
+        && assignPickContainerResponse.getStateCode().getValue().equals(CONFIRMATION_CODE)) {
             Intent intent = new Intent(this, DisplayPickListActivity.class);
-            intent.putExtra("pickWalkId", currentPick.getPickWalkId());
+            intent.putExtra("pickWalkId", pickWalkId);
             startActivity(intent);
         }
     }
 
-    public void onPickDelete() {
-        Intent intent = new Intent(this, DisplayPickListActivity.class);
-        intent.putExtra("pickWalkId", currentPick.getPickWalkId());
-        startActivity(intent);
-    }
+    public class JsonOnScanCompleteAsyncTask extends AsyncTask<String,Void,String> {
 
-    public class JsonPickCompleteRequestAsyncTask extends AsyncTask<String,Void,String> {
-
-        public JsonPickCompleteRequestAsyncTask() {
+        public JsonOnScanCompleteAsyncTask() {
             super();
         }
 
@@ -117,7 +78,7 @@ public class PickActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String r) {
-            onPickComplete(r);
+            onAssignComplete(r);
         }
 
         @Override
@@ -138,7 +99,8 @@ public class PickActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... params) {
             try {
-                return new JsonRequestSender().sendConfirmPickRequest(CONFIRMATION_CODE, currentPick.getPrimaryKey(), currentPick.getQuantityTarget());
+                String barcode = params[0];
+                return new JsonRequestSender().sendAssignPickContainerRequest(pickWalkId, barcode, unitType,"1");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -146,46 +108,8 @@ public class PickActivity extends AppCompatActivity {
         }
     }
 
-    public class JsonPickDeleteRequestAsyncTask extends AsyncTask<String,Void,String> {
+    private void onScan(String barcode) {
 
-        public JsonPickDeleteRequestAsyncTask() {
-            super();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onPostExecute(String r) {
-            onPickDelete();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected void onCancelled(String s) {
-            super.onCancelled(s);
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                SMSSender.sendSMS(PHONE_NUMBER, "Hello, Would you like to substitute item 1 with item 2 ?");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
     }
 
     private void initialiseDetectorsAndSources() {
@@ -198,14 +122,14 @@ public class PickActivity extends AppCompatActivity {
                 .setAutoFocusEnabled(true) //you should add this feature
                 .build();
 
-        _surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+        _surfaceViewScanContainer.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
-                    if (ActivityCompat.checkSelfPermission(PickActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        cameraSource.start(_surfaceView.getHolder());
+                    if (ActivityCompat.checkSelfPermission(ScanContainerActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        cameraSource.start(_surfaceViewScanContainer.getHolder());
                     } else {
-                        ActivityCompat.requestPermissions(PickActivity.this, new
+                        ActivityCompat.requestPermissions(ScanContainerActivity.this, new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
                     }
                 } catch (IOException e) {
@@ -232,7 +156,7 @@ public class PickActivity extends AppCompatActivity {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
-                    _txtBarcodeValue.setText(barcodes.valueAt(0).displayValue);
+                    new JsonOnScanCompleteAsyncTask().execute(barcodes.valueAt(0).displayValue);
                 }
             }
         });
