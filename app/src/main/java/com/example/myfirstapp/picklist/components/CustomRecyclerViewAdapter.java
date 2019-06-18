@@ -1,6 +1,8 @@
 package com.example.myfirstapp.picklist.components;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.myfirstapp.PickActivity;
 import com.example.myfirstapp.R;
 
 import java.io.BufferedInputStream;
@@ -23,10 +26,12 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import json.inbound.Pick;
 import sms.SMSSender;
 
 public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.RowItemViewHolder>   {
     public List<RowItem> rowItems;
+    private Context context;
 
     public class RowItemViewHolder extends RecyclerView.ViewHolder {
         ImageView skuPic;
@@ -45,7 +50,8 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
         }
     }
 
-    public CustomRecyclerViewAdapter(List<RowItem> rowItems) {
+    public CustomRecyclerViewAdapter(Context context,List<RowItem> rowItems) {
+        this.context = context;
         this.rowItems = rowItems;
     }
 
@@ -62,7 +68,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 
     @Override
-    public void onBindViewHolder(@NonNull CustomRecyclerViewAdapter.RowItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final CustomRecyclerViewAdapter.RowItemViewHolder holder, int position) {
         RowItem row_pos = rowItems.get(position);
 //        RowItemViewHolder holder = (RowItemViewHolder)rHolder;
         holder.skuDesc.setText(row_pos.getSkuDescription());
@@ -70,11 +76,28 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
         holder.unit.setText(row_pos.getUnit());
         holder.coordinate.setText(row_pos.getCoordinate());
 //        holder.skuPic.setImageResource(R.drawable.apple);
-        String skuId = row_pos.getSkuId();
+        final String skuId = row_pos.getSkuId();
+        final String orderId = row_pos.getOrderId();
+        final String primaryKey = row_pos.getKey();
+        final int quantityTarget = row_pos.getQuantity();
+        final String skuDesc = row_pos.getSkuDescription();
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("Hello","Item Clicked");
+                Intent pIntent = ((Activity)context).getIntent();
+                String pickWalkId = pIntent.getStringExtra("pickWalkId");
+                Intent intent = new Intent(context, PickActivity.class);
+                Pick pick = new Pick();
+                pick.setPickWalkId(pickWalkId);
+                pick.setCoordinate(holder.coordinate.getText().toString());
+                pick.setOrderId(orderId);
+                pick.setPrimaryKey(primaryKey);
+                pick.setSkuDescription(skuDesc);
+                pick.setSkuId(skuId);
+                pick.setQuantityTarget(quantityTarget);
+                pick.setQuantityUnit(holder.unit.getText().toString());
+                intent.putExtra("pick",pick);
+                context.startActivity(intent);
             }
         });
 

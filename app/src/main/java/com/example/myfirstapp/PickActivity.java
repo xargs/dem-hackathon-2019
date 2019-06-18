@@ -1,18 +1,30 @@
 package com.example.myfirstapp;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.myfirstapp.databinding.ActivityPickDetailsBinding;
+import com.google.android.gms.vision.CameraSource;
+import com.google.android.gms.vision.Detector;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.gson.Gson;
+
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -30,15 +42,25 @@ public class PickActivity extends AppCompatActivity {
     private TextView textView;
     private ActivityPickDetailsBinding activityPickDetailsBinding;
     private Pick currentPick;
+    private BarcodeDetector barcodeDetector;
+    private CameraSource cameraSource;
+    private static final int REQUEST_CAMERA_PERMISSION = 201;
 
     @Bind(R.id.buttonPick) Button _pickButton;
     @Bind(R.id.buttonDelete) Button _deleteButton;
-
+    @Bind(R.id.surfaceView) SurfaceView _surfaceView;
+    @Bind(R.id.txtBarcodeValue) TextView _txtBarcodeValue;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityPickDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_pick_details);
         ButterKnife.bind(this);
+        Intent intent = getIntent();
+        Pick pick = (Pick) intent.getSerializableExtra("pick");
+        currentPick = pick;
+        activityPickDetailsBinding.skuValue.setText(pick.getSkuId());
+        activityPickDetailsBinding.skuDescriptionValue.setText(pick.getSkuDescription());
+        activityPickDetailsBinding.qtyValue.setText(String.valueOf(pick.getQuantityTarget()));
         _pickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,5 +186,68 @@ public class PickActivity extends AppCompatActivity {
             }
             return null;
         }
+    }
+
+    private void initialiseDetectorsAndSources() {
+        barcodeDetector = new BarcodeDetector.Builder(this)
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .build();
+
+        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+                .setRequestedPreviewSize(1920, 1080)
+                .setAutoFocusEnabled(true) //you should add this feature
+                .build();
+
+        _surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+            @Override
+            public void surfaceCreated(SurfaceHolder holder) {
+                try {
+                    if (ActivityCompat.checkSelfPermission(PickActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        cameraSource.start(_surfaceView.getHolder());
+                    } else {
+                        ActivityCompat.requestPermissions(PickActivity.this, new
+                                String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+            }
+
+            @Override
+            public void surfaceDestroyed(SurfaceHolder holder) {
+                cameraSource.stop();
+            }
+        });
+
+        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+            @Override
+            public void release() {
+            }
+
+            @Override
+            public void receiveDetections(Detector.Detections<Barcode> detections) {
+                final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                if (barcodes.size() != 0) {
+                    _txtBarcodeValue.setText(barcodes.valueAt(0).displayValue);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cameraSource.release();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initialiseDetectorsAndSources();
     }
 }
