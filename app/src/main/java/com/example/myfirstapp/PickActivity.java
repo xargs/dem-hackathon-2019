@@ -16,7 +16,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.myfirstapp.databinding.ActivityPickDetailsBinding;
 import com.google.android.gms.vision.CameraSource;
@@ -61,6 +60,7 @@ public class PickActivity extends AppCompatActivity {
         currentPick = pick;
         activityPickDetailsBinding.skuValue.setText(pick.getSkuId());
         activityPickDetailsBinding.skuDescriptionValue.setText(pick.getSkuDescription());
+        activityPickDetailsBinding.qtyValue.setText(String.valueOf(pick.getQuantityTarget()));
         _pickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,8 +189,6 @@ public class PickActivity extends AppCompatActivity {
     }
 
     private void initialiseDetectorsAndSources() {
-
-        Toast.makeText(getApplicationContext(), "Barcode scanner started", Toast.LENGTH_SHORT).show();
         barcodeDetector = new BarcodeDetector.Builder(this)
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
@@ -210,12 +208,9 @@ public class PickActivity extends AppCompatActivity {
                         ActivityCompat.requestPermissions(PickActivity.this, new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
                     }
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-
             }
 
             @Override
@@ -228,42 +223,16 @@ public class PickActivity extends AppCompatActivity {
             }
         });
 
-
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 if (barcodes.size() != 0) {
-
                     _txtBarcodeValue.setText(barcodes.valueAt(0).displayValue);
-//                    callPickActivity(barcodes.valueAt(0).displayValue);
-
-//                    txtBarcodeValue.post(new Runnable() {
-//
-//                        @Override
-//                        public void run() {
-//
-//                            if (barcodes.valueAt(0).email != null) {
-//                                txtBarcodeValue.removeCallbacks(null);
-//                                intentData = barcodes.valueAt(0).email.address;
-//                                txtBarcodeValue.setText(intentData);
-//                                isEmail = true;
-//                                btnAction.setText("ADD CONTENT TO THE MAIL");
-//                            } else {
-//                                isEmail = false;
-//                                btnAction.setText("LAUNCH URL");
-//                                intentData = barcodes.valueAt(0).displayValue;
-//                                txtBarcodeValue.setText(intentData);
-//
-//                            }
-//                        }
-//                    });
-
                 }
             }
         });
@@ -280,7 +249,5 @@ public class PickActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initialiseDetectorsAndSources();
-
-
     }
 }
